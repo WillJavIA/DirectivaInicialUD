@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nivel Inicial · Padres de Familia</title>
-<link rel="icon" type="image/jpeg" href="https://nivelinicial-ud.netlify.app/logo.jpeg">
+<link rel="icon" type="image/jpeg" href="logo.jpeg">
 <meta property="og:title" content="Nivel Inicial · Unitec Discovery — Padres de Familia">
 <meta property="og:description" content="Comunicación, actividades y tesorería del curso, todo en un solo lugar.">
-<meta property="og:image" content="https://nivelinicial-ud.netlify.app/logo.jpeg">
+<meta property="og:image" content="logo.jpeg">
 <meta property="og:type" content="website">
 <meta name="description" content="Plataforma de comunicación para padres de familia — Nivel Inicial, Unitec Discovery.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -333,6 +333,19 @@
   .module-name{font-family:'Baloo 2',sans-serif; font-weight:600; font-size:14.5px; margin-bottom:2px;}
   .module-desc{font-size:12.5px; color:var(--muted); line-height:1.4;}
 
+  /* ---------- Banner flotante temporal ---------- */
+  .floating-banner{
+    position:fixed; top:0; left:0; right:0; z-index:1000;
+    background:var(--primary); color:#fff;
+    padding:10px 46px 10px 16px; font-size:12.5px; line-height:1.45;
+    text-align:center;
+  }
+  .floating-banner .close-banner{
+    position:absolute; right:8px; top:50%; transform:translateY(-50%);
+    background:transparent; border:none; color:#fff; font-size:20px;
+    line-height:1; cursor:pointer; padding:4px 8px;
+  }
+
   /* ---------- bottom mobile nav ---------- */
   .bottom-nav{display:none;}
 
@@ -358,6 +371,10 @@
 </style>
 </head>
 <body>
+<div class="floating-banner" id="floating-banner">
+  Esta aplicación no reemplaza los canales oficiales de comunicación de la institución UNITEC DISCOVERY, recomendamos siempre estar pendiente de los comunicados de la institución, este espacio es únicamente para coordinación y reporte de actividades de los padres de familia del nivel INICIAL.
+  <button class="close-banner" id="banner-close" aria-label="Cerrar aviso">×</button>
+</div>
 <div class="app">
 
   <!-- ================= SIDEBAR ================= -->
@@ -902,6 +919,28 @@ finTable.innerHTML = estudiantesFin.map(nombre => `
     <td><span class="tag tag-neutral">No existe pendientes a la fecha</span></td>
   </tr>
 `).join('');
+
+/* ============ BANNER FLOTANTE TEMPORAL ============ */
+const BANNER_UNTIL = new Date('2026-09-23T23:59:59');
+const bannerEl = document.getElementById('floating-banner');
+function adjustBannerSpace(){
+  document.body.style.paddingTop = bannerEl.offsetHeight + 'px';
+}
+function initBanner(){
+  const dismissed = localStorage.getItem('bannerDismissed_canalOficial');
+  if(dismissed || new Date() > BANNER_UNTIL){
+    bannerEl.style.display = 'none';
+    return;
+  }
+  adjustBannerSpace();
+  window.addEventListener('resize', adjustBannerSpace);
+}
+document.getElementById('banner-close').addEventListener('click', ()=>{
+  localStorage.setItem('bannerDismissed_canalOficial', '1');
+  bannerEl.style.display = 'none';
+  document.body.style.paddingTop = '0';
+});
+initBanner();
 </script>
 </body>
 </html>
