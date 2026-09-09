@@ -150,6 +150,11 @@
   .person-info{flex:1; min-width:0;}
   .person-name{font-weight:700; font-size:14.5px;}
   .person-sub{font-size:13px; color:var(--muted);}
+  .person-sub-badge{
+    display:inline-block; font-size:12px; font-weight:700;
+    color:var(--primary); background:var(--primary-soft);
+    padding:2px 10px; border-radius:var(--radius-pill); margin-top:1px;
+  }
   .wa-link{
     display:flex; align-items:center; gap:6px;
     padding:7px 12px; border-radius:var(--radius-pill);
@@ -333,7 +338,7 @@
   .module-name{font-family:'Baloo 2',sans-serif; font-weight:600; font-size:14.5px; margin-bottom:2px;}
   .module-desc{font-size:12.5px; color:var(--muted); line-height:1.4;}
 
-  /* ---------- Banner flotante temporal ---------- */
+  /* ---------- Banner superior (fase 1: 45s o hasta cerrar con X) ---------- */
   .floating-banner{
     position:fixed; top:0; left:0; right:0; z-index:1000;
     background:var(--primary); color:#fff;
@@ -346,6 +351,28 @@
     position:absolute; right:8px; top:50%; transform:translateY(-50%);
     background:transparent; border:none; color:#fff; font-size:20px;
     line-height:1; cursor:pointer; padding:4px 8px;
+  }
+
+  /* ---------- Cinta al pie (fase 2: aparece tras cerrar el banner, dura 90s) ---------- */
+  .footer-ticker{
+    position:fixed; left:0; right:0; bottom:0; z-index:900;
+    background:var(--bg); border-top:1px solid var(--border);
+    overflow:hidden; white-space:nowrap; padding:6px 0;
+    transition:opacity 1s ease;
+    display:none;
+  }
+  .footer-ticker.fading{opacity:0;}
+  .footer-ticker span{
+    display:inline-block; padding-left:100%;
+    font-size:11px; color:var(--muted);
+    animation:ticker-scroll 42s linear infinite;
+  }
+  @keyframes ticker-scroll{
+    from{ transform:translateX(0); }
+    to{ transform:translateX(-100%); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .footer-ticker span{ animation:none; padding-left:16px; }
   }
 
   /* ---------- bottom mobile nav ---------- */
@@ -367,6 +394,7 @@
       padding:6px 4px; font-size:10.5px; color:var(--muted); font-weight:700;
     }
     .bottom-nav button.active{color:var(--primary);}
+    .footer-ticker{bottom:58px;}
     .poll-options{grid-template-columns:1fr 1fr;}
     .stat-row{grid-template-columns:1fr;}
   }
@@ -376,6 +404,9 @@
 <div class="floating-banner" id="floating-banner">
   Esta aplicación no reemplaza los canales oficiales de comunicación de la institución UNITEC DISCOVERY, recomendamos siempre estar pendiente de los comunicados de la institución, este espacio es únicamente para coordinación y reporte de actividades de los padres de familia del nivel INICIAL.
   <button class="close-banner" id="banner-close" aria-label="Cerrar aviso">×</button>
+</div>
+<div class="footer-ticker" id="footer-ticker">
+  <span>Esta aplicación no reemplaza los canales oficiales de comunicación de la institución UNITEC DISCOVERY, recomendamos siempre estar pendiente de los comunicados de la institución, este espacio es únicamente para coordinación y reporte de actividades de los padres de familia del nivel INICIAL.&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;Sus datos se manejarán con total privacidad. No nos responsabilizamos por fuga de datos fuera de este grupo de padres de familia. DIRECTIVA PADRES DE FAMILIA INICIAL U.D.</span>
 </div>
 <div class="app">
 
@@ -573,7 +604,7 @@
       <div class="poll-card">
         <p class="poll-q">¿Dónde prefieres nuestro encuentro de integración?</p>
         <div class="poll-options">
-          <div class="poll-opt"><span class="opt-icon">🧸</span>Salón de Juegos Infantiles</div>
+          <div class="poll-opt"><span class="opt-icon">🛝</span>Salón de Juegos Infantiles</div>
           <div class="poll-opt"><span class="opt-icon">🍽️</span>Restaurante espacio Abierto</div>
           <div class="poll-opt"><span class="opt-icon">🏫</span>Institución UD</div>
           <div class="poll-opt"><span class="opt-icon">🌳</span>Parque al aire libre</div>
@@ -680,7 +711,7 @@ const miembros = [
 const profesores = [
   {nombre:"Lic. Estefanía Segarra", tel:"0997342711", rol:"Docente de Nivel Inicial"},
   {nombre:"Secretaría Unitec Discovery", tel:"0987182745", rol:"Contacto institucional"},
-  {nombre:"William Javier Llumiquinga Yar", tel:"0998340152", rol:"Presidente/a de Nivel Inicial"},
+  {nombre:"William Llumiquinga", tel:"0998340152", rol:"Presidente/a de Nivel Inicial"},
   {nombre:"Sharon Michelena", tel:"0997982344", rol:"Secretario/a de Nivel Inicial"},
   {nombre:"Gabriela Coronel", tel:"0979178176", rol:"Tesorero/a de Nivel Inicial"},
   {nombre:"Joffre Sánchez", tel:"", rol:"Vocal de Convivencia armónica"},
@@ -753,19 +784,20 @@ function toWhatsapp(tel){
   else if(d.startsWith('0')) d = '593' + d.slice(1);
   return 'https://wa.me/' + d;
 }
-function personRow(nombre, sub, tel){
+function personRow(nombre, sub, tel, highlight=false){
   const contact = tel
     ? `<a class="wa-link" href="${toWhatsapp(tel)}" target="_blank" rel="noopener">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15L2 22l5.2-1.4A10 10 0 1012 2z" opacity=".18"/><path d="M17 14.2c-.3-.2-1.8-.9-2-1-.3-.1-.5-.2-.7.1s-.8 1-.9 1.2-.3.2-.6.1a8 8 0 01-2.3-1.4 8.7 8.7 0 01-1.6-2c-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5s0-.4 0-.5c0-.2-.7-1.7-1-2.3-.2-.6-.5-.5-.7-.5h-.6a1.2 1.2 0 00-.9.4A3.5 3.5 0 004 9.6c0 1.9 1.4 3.7 1.6 4 .2.3 2.8 4.3 6.8 5.7.9.3 1.6.5 2.2.7.9.3 1.7.2 2.4.1.7-.1 2-.8 2.3-1.6.3-.8.3-1.5.2-1.6-.1-.2-.3-.3-.6-.4z"/></svg>
         WhatsApp
       </a>`
     : `<span class="tel-missing">Sin teléfono</span>`;
+  const subClass = highlight ? 'person-sub-badge' : 'person-sub';
   return `
     <div class="person-row">
       <div class="avatar">${iniciales(nombre)}</div>
       <div class="person-info">
         <div class="person-name">${nombre}</div>
-        <div class="person-sub">${sub}</div>
+        <div class="${subClass}">${sub}</div>
       </div>
       ${contact}
     </div>
@@ -779,12 +811,13 @@ function renderMiembros(filter=''){
     .map(m => personRow(m.nombre, 'Representa a '+m.estudiante, m.tel))
     .join('') || `<div class="empty">Sin resultados para "${filter}".</div>`;
 }
+const rolesDestacados = ["Docente de Nivel Inicial","Contacto institucional","Presidente/a de Nivel Inicial","Secretario/a de Nivel Inicial","Tesorero/a de Nivel Inicial"];
 function renderProfesores(filter=''){
   const list = document.getElementById('profesores-list');
   const f = filter.toLowerCase();
   list.innerHTML = profesores
     .filter(p => p.nombre.toLowerCase().includes(f) || p.rol.toLowerCase().includes(f))
-    .map(p => personRow(p.nombre, p.rol, p.tel))
+    .map(p => personRow(p.nombre, p.rol, p.tel, rolesDestacados.includes(p.rol)))
     .join('') || `<div class="empty">Sin resultados para "${filter}".</div>`;
 }
 renderMiembros();
@@ -923,25 +956,28 @@ finTable.innerHTML = estudiantesFin.map(nombre => `
   </tr>
 `).join('');
 
-/* ============ BANNER FLOTANTE TEMPORAL ============ */
-const BANNER_UNTIL = new Date('2026-09-23T23:59:59');
+/* ============ FASE 1: BANNER SUPERIOR (45s o hasta cerrar con X) ============ */
+const CAMPAIGN_UNTIL = new Date('2026-09-23T23:59:59');
 const bannerEl = document.getElementById('floating-banner');
+const tickerEl = document.getElementById('footer-ticker');
 let bannerAutoTimer = null;
+
 function adjustBannerSpace(){
   document.body.style.paddingTop = bannerEl.offsetHeight + 'px';
 }
 function hideBanner(){
   document.body.style.paddingTop = '0';
   bannerEl.style.display = 'none';
+  startTicker();
 }
 function fadeBanner(){
   bannerEl.classList.add('fading');
   setTimeout(hideBanner, 650);
 }
 function initBanner(){
-  const dismissed = localStorage.getItem('bannerDismissed_canalOficial');
-  if(dismissed || new Date() > BANNER_UNTIL){
+  if(new Date() > CAMPAIGN_UNTIL){
     bannerEl.style.display = 'none';
+    tickerEl.style.display = 'none';
     return;
   }
   adjustBannerSpace();
@@ -950,9 +986,28 @@ function initBanner(){
 }
 document.getElementById('banner-close').addEventListener('click', ()=>{
   clearTimeout(bannerAutoTimer);
-  localStorage.setItem('bannerDismissed_canalOficial', '1');
   hideBanner();
 });
+
+/* ============ FASE 2: CINTA AL PIE (90s, luego desaparece hasta la próxima visita) ============ */
+function adjustTickerSpace(){
+  document.body.style.paddingBottom = tickerEl.offsetHeight + 'px';
+}
+function hideTicker(){
+  document.body.style.paddingBottom = '0';
+  tickerEl.style.display = 'none';
+}
+function fadeTicker(){
+  tickerEl.classList.add('fading');
+  setTimeout(hideTicker, 1050);
+}
+function startTicker(){
+  tickerEl.style.display = 'block';
+  adjustTickerSpace();
+  window.addEventListener('resize', adjustTickerSpace);
+  setTimeout(fadeTicker, 45000);
+}
+
 initBanner();
 </script>
 </body>
