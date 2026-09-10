@@ -139,6 +139,12 @@
     display:flex; align-items:center; gap:12px;
     background:var(--surface); border:1px solid var(--border);
     border-radius:12px; padding:11px 14px;
+    position:relative;
+  }
+  .row-index{
+    position:absolute; top:4px; left:4px;
+    font-family:'Karla',sans-serif; font-size:12px; font-weight:400;
+    color:var(--muted); opacity:.4;
   }
   .avatar{
     width:38px; height:38px; border-radius:50%;
@@ -303,6 +309,7 @@
 
   table{width:100%; border-collapse:collapse; font-size:13.5px;}
   th{text-align:left; font-size:12px; color:var(--muted); padding:8px 10px; border-bottom:1.5px solid var(--border);}
+  .col-num{color:var(--muted); font-size:12.5px; width:32px; font-variant-numeric:tabular-nums;}
   td{padding:10px; border-bottom:1px solid var(--border);}
   .tag{padding:3px 10px; border-radius:var(--radius-pill); font-size:11.5px; font-weight:700;}
   .tag-pend{background:var(--coral-soft); color:#A03D26;}
@@ -552,11 +559,10 @@
 
     <!-- ---- ESTUDIANTES ---- -->
     <section class="view" id="view-estudiantes">
-      <div class="empty">
-        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 9l10-4 10 4-10 4-10-4z"/><path d="M6 11v5c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-5"/></svg>
-        <p>Aún no se han registrado estudiantes.<br>Este módulo usará la misma vista de lista que Miembros.</p>
-        <button class="ghost-btn">+ Agregar estudiante</button>
+      <div class="toolbar">
+        <input class="search" id="estudiantes-search" placeholder="Buscar estudiante...">
       </div>
+      <div class="person-list" id="estudiantes-list"></div>
     </section>
 
     <!-- ---- PROFESORES ---- -->
@@ -573,12 +579,10 @@
         <div class="note n1">
           <h3>Bienvenida al año escolar</h3>
           <p>¡Arrancamos el período 2026-2027! Reunión General de Padres de Familia · 08 Sep, 18:00.</p>
-          <time>Ver en Calendario</time>
         </div>
         <div class="note n2">
           <h3>Primera Reunión de Presidentes</h3>
           <p>Conformación del Comité Central · 15 Sep, 08:00 am.</p>
-          <time>Ver en Calendario</time>
         </div>
       </div>
     </section>
@@ -678,7 +682,7 @@
       <div class="card">
         <h3 style="font-size:15px; margin-bottom:6px;">Aportes por estudiante</h3>
         <table>
-          <thead><tr><th>Estudiante</th><th>Monto</th><th>Estado</th></tr></thead>
+          <thead><tr><th class="col-num">#</th><th>Estudiante</th><th>Monto</th><th>Estado</th></tr></thead>
           <tbody id="fin-table"></tbody>
         </table>
         <p class="table-note">Datos de ejemplo — se completará al conectar con Google Sheets.</p>
@@ -724,7 +728,7 @@ const profesores = [
   {nombre:"Ángel Oswaldo Pérez Torres", tel:"0997238250", rol:"Vocal de participación"},
 ];
 
-const estudiantesFin = ["Juan Daniel Briones","Logan Burt","Martina Elvay","Eduardo Ochoa","Martina Perelli","Juan Pérez","María Paz Sánchez","Santi Zurita","Emmanuel Quizhpi","David Mejía","Paula","Joaquín Sebastián Llumiquinga G."];
+const estudiantesFin = ["Briones Juan Daniel","Burt Logan","Elvay Martina","Llumiquinga Joaquin Sebastián","Mejía David","Ochoa Eduardo","Paula","Perelli Martina","Pérez Juan","Quizhpi Emmanuel","Sánchez María Paz","Zurita Santi"];
 
 const eventos = [
   {fecha:"2026-09-08", hora:"18:00", titulo:"Reunión General de Padres de Familia", desc:"Unitec Discovery"},
@@ -815,6 +819,21 @@ function renderMiembros(filter=''){
     .map(m => personRow(m.nombre, 'Representa a '+m.estudiante, m.tel))
     .join('') || `<div class="empty">Sin resultados para "${filter}".</div>`;
 }
+function renderEstudiantes(filter=''){
+  const list = document.getElementById('estudiantes-list');
+  const f = filter.toLowerCase();
+  list.innerHTML = estudiantesFin
+    .filter(n => n.toLowerCase().includes(f))
+    .map((n, i) => `
+      <div class="person-row">
+        <span class="row-index">${i+1}</span>
+        <div class="avatar">${iniciales(n)}</div>
+        <div class="person-info">
+          <div class="person-name">${n}</div>
+        </div>
+      </div>
+    `).join('') || `<div class="empty">Sin resultados para "${filter}".</div>`;
+}
 const rolesDestacados = ["Docente de Nivel Inicial","Contacto institucional","Presidente/a de Nivel Inicial","Secretario/a de Nivel Inicial","Tesorero/a de Nivel Inicial"];
 function renderProfesores(filter=''){
   const list = document.getElementById('profesores-list');
@@ -826,6 +845,8 @@ function renderProfesores(filter=''){
 }
 renderMiembros();
 document.getElementById('miembros-search').addEventListener('input', e=> renderMiembros(e.target.value));
+renderEstudiantes();
+document.getElementById('estudiantes-search').addEventListener('input', e=> renderEstudiantes(e.target.value));
 renderProfesores();
 document.getElementById('profesores-search').addEventListener('input', e=> renderProfesores(e.target.value));
 
@@ -952,8 +973,9 @@ chartEl.innerHTML = chartData.map(c => `
 `).join('');
 
 const finTable = document.getElementById('fin-table');
-finTable.innerHTML = estudiantesFin.map(nombre => `
+finTable.innerHTML = estudiantesFin.map((nombre, i) => `
   <tr>
+    <td class="col-num">${i+1}</td>
     <td>${nombre}</td>
     <td>$0.00</td>
     <td><span class="tag tag-neutral">No existe pendientes a la fecha</span></td>
@@ -1019,6 +1041,22 @@ function startTicker(){
 }
 
 initBanner();
+
+/* ============ ÚLTIMA ACTUALIZACIÓN (automática desde GitHub) ============ */
+async function updateLastModified(){
+  try{
+    const res = await fetch('https://api.github.com/repos/WillJavIA/DirectivaInicialUD/commits?path=index.html&per_page=1');
+    if(!res.ok) throw new Error('respuesta no válida');
+    const data = await res.json();
+    const fecha = new Date(data[0].commit.committer.date);
+    const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    const texto = `${String(fecha.getDate()).padStart(2,'0')} ${meses[fecha.getMonth()]} ${fecha.getFullYear()}`;
+    document.getElementById('last-update').textContent = texto;
+  }catch(e){
+    // Si falla la consulta (sin internet, límite de GitHub, etc.) se deja el texto que ya está escrito como respaldo.
+  }
+}
+updateLastModified();
 </script>
 </body>
 </html>
