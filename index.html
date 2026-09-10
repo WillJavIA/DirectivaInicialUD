@@ -239,6 +239,7 @@
 
   /* ---------- Encuestas ---------- */
   .poll-card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-card); padding:26px; max-width:560px; margin:0 auto;}
+  .poll-title{font-family:'Baloo 2',sans-serif; font-size:22px; color:var(--primary); text-align:center; margin-bottom:6px;}
   .poll-q{font-family:'Baloo 2',sans-serif; font-size:18px; margin-bottom:18px; text-align:center;}
   .poll-options{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:22px;}
   .poll-opt{
@@ -602,15 +603,16 @@
     <!-- ---- ENCUESTAS ---- -->
     <section class="view" id="view-encuestas">
       <div class="poll-card">
-        <p class="poll-q">¿Dónde prefieres nuestro encuentro de integración?</p>
+        <h3 class="poll-title">Próxima Encuesta</h3>
+        <p class="poll-q">¿Dónde prefieres nuestro próximo encuentro de integración? (Próximamente)</p>
         <div class="poll-options">
           <div class="poll-opt"><span class="opt-icon">🛝</span>Salón de Juegos Infantiles</div>
           <div class="poll-opt"><span class="opt-icon">🍽️</span>Restaurante espacio Abierto</div>
           <div class="poll-opt"><span class="opt-icon">🏫</span>Institución UD</div>
           <div class="poll-opt"><span class="opt-icon">🌳</span>Parque al aire libre</div>
         </div>
-        <a class="poll-cta" href="#" id="poll-link" target="_blank" rel="noopener">Responder encuesta →</a>
-        <p class="poll-note">Reemplaza el enlace por tu formulario real de Google Forms.</p>
+        <a class="poll-cta" href="#" id="poll-link" target="_blank" rel="noopener">Ir al grupo y votar →</a>
+        <p class="poll-note">La encuesta estará fijada próximamente al inicio del grupo de WhatsApp de padres.</p>
       </div>
     </section>
 
@@ -699,8 +701,8 @@ const miembros = [
   {nombre:"Miguel Elvay", tel:"0987589998", estudiante:"Martina Elvay"},
   {nombre:"Paola Peralta", tel:"0983129101", estudiante:"Eduardo Ochoa"},
   {nombre:"Kenia López", tel:"0983478782", estudiante:"Martina Perelli"},
-  {nombre:"Ángel Pérez (papá)", tel:"0997238250", estudiante:"Juan Pérez"},
-  {nombre:"Luz Alarcón (mamá)", tel:"0989074441", estudiante:"Juan Pérez"},
+  {nombre:"Ángel Oswaldo Pérez Torres", tel:"0997238250", estudiante:"Juan Pérez"},
+  {nombre:"Anita Alarcón (mamá)", tel:"0989074441", estudiante:"Juan Pérez"},
   {nombre:"Diana Yarleque", tel:"0995263077", estudiante:"María Paz Sánchez"},
   {nombre:"Sharon Michelena", tel:"0997982344", estudiante:"Santi Zurita"},
   {nombre:"Karina Sarmiento", tel:"0958620928", estudiante:"Emmanuel Quizhpi"},
@@ -719,7 +721,7 @@ const profesores = [
   {nombre:"Joffre Sánchez", tel:"", rol:"Vocal de Convivencia armónica"},
   {nombre:"Gissella Ochoa", tel:"", rol:"Vocal de alimentación saludable"},
   {nombre:"Kenia López Fajardo", tel:"0983478782", rol:"Vocal de seguridad"},
-  {nombre:"Oswaldo Pérez", tel:"", rol:"Vocal de participación"},
+  {nombre:"Ángel Oswaldo Pérez Torres", tel:"0997238250", rol:"Vocal de participación"},
 ];
 
 const estudiantesFin = ["Juan Daniel Briones","Logan Burt","Martina Elvay","Eduardo Ochoa","Martina Perelli","Juan Pérez","María Paz Sánchez","Santi Zurita","Emmanuel Quizhpi","David Mejía","Paula","Joaquín Sebastián Llumiquinga G."];
@@ -910,7 +912,7 @@ document.getElementById('cal-next').addEventListener('click', ()=>{
 renderCalendar();
 
 /* ============ ENCUESTAS ============ */
-document.getElementById('poll-link').href = 'https://forms.gle/REEMPLAZAR-ENLACE';
+document.getElementById('poll-link').href = 'https://chat.whatsapp.com/E6ifoIRhqvJCTbF7fGrLEW?s=cl&p=i&mlu=4&ilr=4';
 
 /* ============ COMENTARIOS ============ */
 const commentText = document.getElementById('comment-text');
