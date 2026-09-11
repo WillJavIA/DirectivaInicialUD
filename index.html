@@ -310,6 +310,15 @@
   table{width:100%; border-collapse:collapse; font-size:13.5px;}
   th{text-align:left; font-size:12px; color:var(--muted); padding:8px 10px; border-bottom:1.5px solid var(--border);}
   .col-num{color:var(--muted); font-size:12.5px; width:32px; font-variant-numeric:tabular-nums;}
+
+  .fin-table{border-collapse:collapse; font-size:12.5px; table-layout:fixed;}
+  .fin-table th, .fin-table td{padding:9px 10px; border-bottom:1px solid var(--border); white-space:nowrap;}
+  .fin-table thead th{color:var(--muted); font-weight:700; font-size:11.5px; text-align:left; background:var(--surface);}
+  .fin-sticky-1{position:sticky; left:0; background:var(--surface); z-index:2; min-width:150px;}
+  .fin-sticky-2{position:sticky; left:150px; background:var(--surface); z-index:2; min-width:120px;}
+  .fin-sticky-3{position:sticky; left:270px; background:var(--surface); z-index:2; min-width:90px; border-right:1px solid var(--border);}
+  .fin-concepto-head{font-weight:400; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:100px; cursor:help;}
+  .fin-cell-pend{color:var(--muted);}
   td{padding:10px; border-bottom:1px solid var(--border);}
   .tag{padding:3px 10px; border-radius:var(--radius-pill); font-size:11.5px; font-weight:700;}
   .tag-pend{background:var(--coral-soft); color:#A03D26;}
@@ -679,13 +688,10 @@
         <div class="chart" id="fin-chart"></div>
       </div>
 
-      <div class="card">
+      <div class="card" style="margin-bottom:20px;">
         <h3 style="font-size:15px; margin-bottom:6px;">Aportes por estudiante</h3>
-        <table>
-          <thead><tr><th class="col-num">#</th><th>Estudiante</th><th>Monto</th><th>Estado</th></tr></thead>
-          <tbody id="fin-table"></tbody>
-        </table>
-        <p class="table-note">Datos de ejemplo — se completará al conectar con Google Sheets.</p>
+        <p class="table-note" id="fin-status" style="margin-bottom:10px;">Cargando datos desde Google Sheets...</p>
+        <div id="fin-table-wrap" style="overflow-x:auto;"></div>
       </div>
     </section>
 
@@ -973,15 +979,100 @@ chartEl.innerHTML = chartData.map(c => `
   </div>
 `).join('');
 
-const finTable = document.getElementById('fin-table');
-finTable.innerHTML = estudiantesFin.map((nombre, i) => `
-  <tr>
-    <td class="col-num">${i+1}</td>
-    <td>${nombre}</td>
-    <td>$0.00</td>
-    <td><span class="tag tag-neutral">No existe pendientes a la fecha</span></td>
-  </tr>
-`).join('');
+/* ============ FINANZAS: CONEXIÓN CON GOOGLE SHEETS ============ */
+const CSV_ESTUDIANTES = 'REEMPLAZAR-LINK-CSV-ESTUDIANTES';
+const CSV_RESUMEN = 'REEMPLAZAR-LINK-CSV-RESUMEN';
+
+function parseCSV(text){
+  return text.trim().split('\n').map(line=>{
+    const cells = [];
+    let cur = '', inQuotes = false;
+    for(let i=0;i<line.length;i++){
+      const ch = line[i];
+      if(ch === '"'){ inQuotes = !inQuotes; }
+      else if(ch === ',' && !inQuotes){ cells.push(cur); cur=''; }
+      else { cur += ch; }
+    }
+    cells.push(cur);
+    return cells.map(c=>c.trim());
+  });
+}
+
+function parseMoney(str){
+  if(!str) return 0;
+  const n = parseFloat(str.replace(/[^0-9.\-]/g,''));
+  return isNaN(n) ? 0 : n;
+}
+
+async function loadResumen(){
+  const res = await fetch(CSV_RESUMEN);
+  if(!res.ok) throw new Error('resumen no disponible');
+  const rows = parseCSV(await res.text());
+  const find = label => {
+    const row = rows.find(r => r[0] && r[0].toLowerCase().includes(label));
+    return row ? parseMoney(row[1]) : 0;
+  };
+  const ingresos = find('ingresos');
+  const gastos = find('gastos');
+  const saldo = find('saldo');
+  document.querySelector('.stat-in .stat-value').textContent = '$' + ingresos.toFixed(2);
+  document.querySelector('.stat-out .stat-value').textContent = '$' + gastos.toFixed(2);
+  document.querySelector('.stat-balance .stat-value').textContent = '$' + saldo.toFixed(2);
+}
+
+async function loadEstudiantesFinanzas(){
+  const res = await fetch(CSV_ESTUDIANTES);
+  if(!res.ok) throw new Error('estudiantes no disponible');
+  const rows = parseCSV(await res.text());
+  const header = rows[0];
+  const dataRows = rows.slice(1).filter(r => r[0]);
+
+  const conceptCols = [];
+  for(let c=3; c<header.length; c++){
+    if(header[c] && header[c].trim() !== ''){
+      conceptCols.push({ index:c, nombre: header[c] });
+    }
+  }
+
+  const wrap = document.getElementById('fin-table-wrap');
+  let html = '<table class="fin-table"><thead><tr>';
+  html += '<th class="fin-sticky-1">Estudiante</th>';
+  html += '<th class="fin-sticky-2">Estado</th>';
+  html += '<th class="fin-sticky-3">Total</th>';
+  conceptCols.forEach(c=>{
+    html += `<th title="${c.nombre}"><span class="fin-concepto-head">${c.nombre}</span></th>`;
+  });
+  html += '</tr></thead><tbody>';
+
+  dataRows.forEach(row=>{
+    const estado = row[1] || 'Pendiente';
+    const tagClass = estado.toLowerCase().includes('no existe') ? 'tag-ok' : 'tag-pend';
+    html += '<tr>';
+    html += `<td class="fin-sticky-1">${row[0]}</td>`;
+    html += `<td class="fin-sticky-2"><span class="tag ${tagClass}">${estado}</span></td>`;
+    html += `<td class="fin-sticky-3">$${parseMoney(row[2]).toFixed(2)}</td>`;
+    conceptCols.forEach(c=>{
+      const val = parseMoney(row[c.index]);
+      html += val > 0
+        ? `<td>$${val.toFixed(2)}</td>`
+        : `<td class="fin-cell-pend">—</td>`;
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+
+async function initFinanzasLive(){
+  const status = document.getElementById('fin-status');
+  try{
+    await Promise.all([loadResumen(), loadEstudiantesFinanzas()]);
+    status.textContent = 'Datos en vivo desde Google Sheets.';
+  }catch(e){
+    status.textContent = 'No se pudo conectar con Google Sheets todavía — revisa que los links CSV estén publicados.';
+  }
+}
+initFinanzasLive();
 
 /* ============ FASE 1: BANNER SUPERIOR (45s o hasta cerrar con X) ============ */
 const CAMPAIGN_UNTIL = new Date('2026-09-23T23:59:59');
