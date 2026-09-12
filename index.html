@@ -1081,7 +1081,7 @@ async function loadEstudiantesFinanzas(){
 
   dataRows.forEach(row=>{
     const estado = row[1] || 'Pendiente';
-    const tagClass = estado.toLowerCase().includes('no existe') ? 'tag-ok' : 'tag-pend';
+    const tagClass = estado.toLowerCase().trim() === 'pendiente' ? 'tag-pend' : 'tag-ok';
     html += '<tr>';
     html += `<td class="fin-sticky-1">${row[0]}</td>`;
     html += `<td class="fin-sticky-2"><span class="tag ${tagClass}">${estado}</span></td>`;
