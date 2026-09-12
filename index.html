@@ -299,13 +299,14 @@
   .stat-out{background:var(--coral-soft); color:#A03D26;}
   .stat-balance{background:var(--accent-soft); color:var(--accent);}
 
-  .chart{display:flex; align-items:flex-end; gap:14px; height:130px; padding:0 6px; margin-bottom:24px;}
-  .chart-col{flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;}
+  .chart-scroll{overflow-x:auto; margin-bottom:24px;}
+  .chart{display:flex; align-items:flex-end; gap:14px; height:130px; padding:0 6px; width:max-content; min-width:100%;}
+  .chart-col{flex:0 0 auto; width:48px; display:flex; flex-direction:column; align-items:center; gap:4px;}
   .bars{display:flex; align-items:flex-end; gap:3px; height:100px;}
   .bar{width:14px; border-radius:4px 4px 0 0;}
   .bar-in{background:var(--primary);}
   .bar-out{background:var(--coral);}
-  .chart-label{font-size:11.5px; color:var(--muted);}
+  .chart-label{font-size:11.5px; color:var(--muted); white-space:nowrap;}
 
   table{width:100%; border-collapse:collapse; font-size:13.5px;}
   th{text-align:left; font-size:12px; color:var(--muted); padding:8px 10px; border-bottom:1.5px solid var(--border);}
@@ -697,7 +698,7 @@
 
       <div class="card" style="margin-bottom:20px;">
         <h3 style="font-size:15px; margin-bottom:14px;">Ingresos vs. gastos (mensual)</h3>
-        <div class="chart" id="fin-chart"></div>
+        <div class="chart-scroll"><div class="chart" id="fin-chart"></div></div>
       </div>
 
       <div class="card" style="margin-bottom:20px;">
