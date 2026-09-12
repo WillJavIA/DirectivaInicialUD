@@ -684,7 +684,7 @@
       </div>
 
       <div class="card" style="margin-bottom:20px;">
-        <h3 style="font-size:15px; margin-bottom:14px;">Ingresos vs. gastos (ejemplo)</h3>
+        <h3 style="font-size:15px; margin-bottom:14px;">Ingresos vs. gastos (mensual)</h3>
         <div class="chart" id="fin-chart"></div>
       </div>
 
@@ -740,13 +740,6 @@ const estudiantesFin = ["Briones Juan Daniel","Burt Logan","Elvay Martina","Llum
 const eventos = [
   {fecha:"2026-09-08", hora:"18:00", titulo:"Reunión General de Padres de Familia", desc:"Unitec Discovery"},
   {fecha:"2026-09-15", hora:"08:00", titulo:"Primera Reunión de Presidentes - Comité Central", desc:"Unitec Discovery"}
-];
-
-const chartData = [
-  {mes:"Jun", in:60, out:20},
-  {mes:"Jul", in:50, out:15},
-  {mes:"Ago", in:70, out:25},
-  {mes:"Sep", in:65, out:20},
 ];
 
 /* ============ NAV ============ */
@@ -967,17 +960,6 @@ document.getElementById('comment-send').addEventListener('click', ()=>{
 });
 
 /* ============ FINANZAS ============ */
-const chartEl = document.getElementById('fin-chart');
-const maxVal = Math.max(...chartData.map(c=>Math.max(c.in,c.out)));
-chartEl.innerHTML = chartData.map(c => `
-  <div class="chart-col">
-    <div class="bars">
-      <div class="bar bar-in" style="height:${(c.in/maxVal*100)}px"></div>
-      <div class="bar bar-out" style="height:${(c.out/maxVal*100)}px"></div>
-    </div>
-    <div class="chart-label">${c.mes}</div>
-  </div>
-`).join('');
 
 /* ============ FINANZAS: CONEXIÓN CON GOOGLE SHEETS ============ */
 const CSV_ESTUDIANTES = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSLLQfAVTnPuklu6OEQRVBU4NCfLAp1HtVpbaeiSK9dhhHj2ou5A2l6bL7F4XDe3EJAQ1wYo82zbahG/pub?gid=572837976&single=true&output=csv';
@@ -1004,6 +986,36 @@ function parseMoney(str){
   return isNaN(n) ? 0 : n;
 }
 
+function parseMonthlyTable(rows){
+  const headerIdx = rows.findIndex(r => r[0] && r[0].trim().toLowerCase() === 'mes');
+  if(headerIdx === -1) return [];
+  const data = [];
+  for(let i = headerIdx + 1; i < rows.length; i++){
+    const r = rows[i];
+    if(!r[0] || !r[0].includes('-')) break;
+    data.push({ mes: r[0], ingresos: parseMoney(r[1]), gastos: parseMoney(r[2]) });
+  }
+  return data;
+}
+
+function renderChart(data){
+  const chartEl = document.getElementById('fin-chart');
+  if(!data.length){
+    chartEl.innerHTML = '<p style="color:var(--muted); font-size:13px;">Aún no hay meses definidos en Resumen.</p>';
+    return;
+  }
+  const maxVal = Math.max(1, ...data.map(c => Math.max(c.ingresos, c.gastos)));
+  chartEl.innerHTML = data.map(c => `
+    <div class="chart-col">
+      <div class="bars">
+        <div class="bar bar-in" style="height:${(c.ingresos/maxVal*100)}px" title="Ingresos: $${c.ingresos.toFixed(2)}"></div>
+        <div class="bar bar-out" style="height:${(c.gastos/maxVal*100)}px" title="Gastos: $${c.gastos.toFixed(2)}"></div>
+      </div>
+      <div class="chart-label">${c.mes}</div>
+    </div>
+  `).join('');
+}
+
 async function loadResumen(){
   const res = await fetch(CSV_RESUMEN);
   if(!res.ok) throw new Error('resumen no disponible');
@@ -1018,6 +1030,7 @@ async function loadResumen(){
   document.querySelector('.stat-in .stat-value').textContent = '$' + ingresos.toFixed(2);
   document.querySelector('.stat-out .stat-value').textContent = '$' + gastos.toFixed(2);
   document.querySelector('.stat-balance .stat-value').textContent = '$' + saldo.toFixed(2);
+  renderChart(parseMonthlyTable(rows));
 }
 
 async function loadEstudiantesFinanzas(){
