@@ -290,14 +290,12 @@
   /* ---------- Reportes ---------- */
   .report-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:16px;}
   .report-card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-card); overflow:hidden;}
-  .report-cover{height:80px; display:flex; align-items:center; justify-content:center; color:#fff;}
-  .report-cover-photo{width:100%; height:150px; object-fit:cover; display:block;}
-  .report-sub-photos{display:grid; grid-template-columns:1fr 1fr; gap:6px; padding:10px 16px 0;}
-  .report-sub-photos img{width:100%; height:80px; object-fit:cover; border-radius:8px; display:block;}
+  .report-cover{height:70px; display:flex; align-items:center; justify-content:center; color:#fff;}
   .report-body{padding:14px 16px;}
   .report-date{font-size:12px; color:var(--muted); font-weight:700;}
   .report-title{font-family:'Baloo 2',sans-serif; font-size:15px; margin:4px 0 6px;}
   .report-desc{font-size:13px; color:var(--muted); margin-bottom:10px;}
+  .report-photo-light{width:100%; height:110px; object-fit:cover; border-radius:10px; display:block; margin-bottom:10px;}
   .report-link{font-size:13px; font-weight:700; color:var(--primary); text-decoration:none;}
 
   /* ---------- Finanzas ---------- */
@@ -679,20 +677,20 @@
     <section class="view" id="view-reportes">
       <div class="report-grid">
         <div class="report-card">
-          <img class="report-cover-photo" src="reporte-bienvenida-2.jpg" alt="Bienvenida año escolar - acto institucional">
-          <div class="report-sub-photos">
-            <img src="reporte-bienvenida-1.jpg" alt="Estudiantes en fila durante la bienvenida">
-            <img src="reporte-bienvenida-3.jpg" alt="Estudiantes en el patio durante la bienvenida">
+          <div class="report-cover" style="background:var(--primary);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M6 3h9l4 4v14H6z"/><path d="M9 12l2 2 4-4"/></svg>
           </div>
           <div class="report-body">
             <div class="report-date">Septiembre 2026</div>
             <div class="report-title">Bienvenida año escolar</div>
             <div class="report-desc">Resumen fotográfico de la primera actividad del período 2026-2027.</div>
+            <img class="report-photo-light" src="reporte-bienvenida-2.jpg" alt="Bienvenida año escolar - acto institucional">
+            <a class="report-link" href="https://photos.app.goo.gl/oKgnyrVXsrW1A5sXA" target="_blank" rel="noopener">Ver álbum completo →</a>
           </div>
         </div>
         <div class="report-card">
           <div class="report-cover" style="background:var(--accent);">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M6 3h9l4 4v14H6z"/><path d="M9 12l2 2 4-4"/></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6"><path d="M6 3h9l4 4v14H6z"/><path d="M9 12l2 2 4-4"/></svg>
           </div>
           <div class="report-body">
             <div class="report-date">Septiembre 2026</div>
