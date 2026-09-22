@@ -315,6 +315,16 @@
   .bar-in{background:var(--primary);}
   .bar-out{background:var(--coral);}
   .chart-label{font-size:11.5px; color:var(--muted); white-space:nowrap;}
+  .chart-yaxis{
+    height:130px; display:flex; flex-direction:column; justify-content:flex-end;
+    flex-shrink:0; padding-right:8px;
+  }
+  .chart-yaxis-values{
+    height:100px; display:flex; flex-direction:column; justify-content:space-between;
+    align-items:flex-end;
+  }
+  .chart-yaxis-values span{font-size:10.5px; color:var(--muted); line-height:1;}
+  .chart-yaxis-spacer{height:18px;}
 
   table{width:100%; border-collapse:collapse; font-size:13.5px;}
   th{text-align:left; font-size:12px; color:var(--muted); padding:8px 10px; border-bottom:1.5px solid var(--border);}
@@ -506,7 +516,7 @@
       </button>
       <button class="nav-item" data-view="finanzas">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 6.5v11"/><path d="M15.2 9c0-1.5-1.4-2.6-3.2-2.6S8.8 7.4 8.8 8.7c0 1.5 1.4 2 3.2 2.3 1.8.3 3.2.9 3.2 2.4S13.8 16 12 16s-3.2-1-3.2-2.5"/></svg>
-        Finanzas
+        Finanzas<span class="nav-update-dot" title="Actualizado"></span>
       </button>
     </nav>
   </aside>
@@ -717,7 +727,10 @@
 
       <div class="card" style="margin-bottom:20px;">
         <h3 style="font-size:15px; margin-bottom:14px;">Ingresos vs. gastos (mensual)</h3>
-        <div class="chart-scroll"><div class="chart" id="fin-chart"></div></div>
+        <div style="display:flex;">
+          <div class="chart-yaxis" id="fin-chart-yaxis"></div>
+          <div class="chart-scroll"><div class="chart" id="fin-chart"></div></div>
+        </div>
       </div>
 
       <div class="card" style="margin-bottom:20px;">
@@ -1040,7 +1053,17 @@ function renderChart(data){
     return;
   }
   const maxVal = Math.max(1, ...data.map(c => Math.max(c.ingresos, c.gastos)));
-  const scaleMax = maxVal * 1.25; // deja un 25% de margen visual sobre el valor más alto registrado
+  const scaleMax = maxVal * 1.25; // el eje siempre llega a 125% del valor más alto registrado
+
+  const yaxisEl = document.getElementById('fin-chart-yaxis');
+  const marks = [1, 0.75, 0.5, 0.25, 0];
+  yaxisEl.innerHTML = `
+    <div class="chart-yaxis-values">
+      ${marks.map(m => `<span>$${Math.round(scaleMax * m)}</span>`).join('')}
+    </div>
+    <div class="chart-yaxis-spacer"></div>
+  `;
+
   chartEl.innerHTML = data.map(c => `
     <div class="chart-col">
       <div class="bars">
