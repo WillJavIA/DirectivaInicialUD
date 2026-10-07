@@ -161,6 +161,16 @@
     color:var(--primary); background:var(--primary-soft);
     padding:2px 10px; border-radius:var(--radius-pill); margin-top:1px;
   }
+  .person-row.is-retired{background:#F4F6FA; border-color:#E1E6EF;}
+  .person-row.is-retired .avatar{background:#E6EAF1; color:#8A94A6;}
+  .person-row.is-retired .person-name,
+  .person-row.is-retired .person-sub{color:#8A94A6;}
+  .tag-estado{
+    display:inline-block; font-size:11.5px; font-weight:700;
+    padding:2px 10px; border-radius:var(--radius-pill); margin-top:2px;
+  }
+  .tag-retirado{background:#E6EAF1; color:#6B7689;}
+  .tag-nuevo{background:#DCF3E1; color:#1E7B34;}
   .wa-link{
     display:flex; align-items:center; gap:6px;
     padding:7px 12px; border-radius:var(--radius-pill);
@@ -792,12 +802,11 @@ const miembros = [
   {nombre:"Gabriela Coronel", tel:"0979178176", estudiante:"Juan Daniel Briones"},
   {nombre:"Emily Burt", tel:"+18157155504", estudiante:"Logan Burt"},
   {nombre:"Jacob Burt", tel:"+18159227952", estudiante:"Logan Burt"},
+  {nombre:"Dayana Rodríguez", tel:"0987262962", estudiante:"Amira Fiorella Delgado Rodríguez", nuevo:"07-Oct"},
   {nombre:"Katherine Rodríguez", tel:"0999784356", estudiante:"Martina Elvay"},
   {nombre:"Miguel Elvay", tel:"0987589998", estudiante:"Martina Elvay"},
   {nombre:"Paola Peralta", tel:"0983129101", estudiante:"Eduardo Ochoa"},
   {nombre:"Kenia López", tel:"0983478782", estudiante:"Martina Perelli"},
-  {nombre:"Ángel Oswaldo Pérez Torres", tel:"0997238250", estudiante:"Juan Pérez"},
-  {nombre:"Anita Alarcón (mamá)", tel:"0989074441", estudiante:"Juan Pérez"},
   {nombre:"Diana Yarleque", tel:"0995263077", estudiante:"María Paz Sánchez"},
   {nombre:"Sharon Michilena", tel:"0997982344", estudiante:"Santi Zurita"},
   {nombre:"Miguel Angel Zurita", tel:"+593999257423", estudiante:"Santi Zurita"},
@@ -806,6 +815,8 @@ const miembros = [
   {nombre:"Jéssica Ortega", tel:"0990112580", estudiante:"Paula Sánchez"},
   {nombre:"Fanny González", tel:"0985310276", estudiante:"Joaquín Sebastián Llumiquinga G."},
   {nombre:"William Javier Llumiquinga Yar", tel:"0998340152", estudiante:"Joaquín Sebastián Llumiquinga G."},
+  {nombre:"Ángel Oswaldo Pérez Torres", tel:"0997238250", estudiante:"Juan Pérez", retirado:"07-Oct"},
+  {nombre:"Anita Alarcón (mamá)", tel:"0989074441", estudiante:"Juan Pérez", retirado:"07-Oct"},
 ];
 
 const profesores = [
@@ -817,10 +828,24 @@ const profesores = [
   {nombre:"Joffre Sánchez", tel:"", rol:"Vocal de Convivencia armónica"},
   {nombre:"Gissella Ochoa", tel:"", rol:"Vocal de alimentación saludable"},
   {nombre:"Kenia López Fajardo", tel:"0983478782", rol:"Vocal de seguridad"},
-  {nombre:"Ángel Oswaldo Pérez Torres", tel:"0997238250", rol:"Vocal de participación"},
+  {nombre:"Vacante", tel:"", rol:"Vocal de participación"},
 ];
 
-const estudiantesFin = ["Briones Juan Daniel","Burt Logan","Elvay Martina","Llumiquinga Joaquin Sebastián","Mejía David","Ochoa Eduardo","Paula Sánchez","Perelli Martina","Pérez Juan","Quizhpi Emmanuel","Sánchez María Paz","Zurita Santi"];
+const estudiantesFin = [
+  {n:"Briones Juan Daniel"},
+  {n:"Burt Logan"},
+  {n:"Delgado Rodríguez Amira Fiorella", nuevo:"07-Oct"},
+  {n:"Elvay Martina"},
+  {n:"Llumiquinga Joaquin Sebastián"},
+  {n:"Mejía David"},
+  {n:"Ochoa Eduardo"},
+  {n:"Paula Sánchez"},
+  {n:"Perelli Martina"},
+  {n:"Quizhpi Emmanuel"},
+  {n:"Sánchez María Paz"},
+  {n:"Zurita Santi"},
+  {n:"Pérez Juan", retirado:"07-Oct"}
+];
 
 const eventos = [
   {fecha:"2026-09-08", hora:"18:00", titulo:"Reunión General de Padres de Familia", desc:"Unitec Discovery", old:true},
@@ -880,7 +905,7 @@ function toWhatsapp(tel){
   else if(d.startsWith('0')) d = '593' + d.slice(1);
   return 'https://wa.me/' + d;
 }
-function personRow(nombre, sub, tel, highlight=false){
+function personRow(nombre, sub, tel, highlight=false, retirado=false){
   const contact = tel
     ? `<a class="wa-link" href="${toWhatsapp(tel)}" target="_blank" rel="noopener">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15L2 22l5.2-1.4A10 10 0 1012 2z" opacity=".18"/><path d="M17 14.2c-.3-.2-1.8-.9-2-1-.3-.1-.5-.2-.7.1s-.8 1-.9 1.2-.3.2-.6.1a8 8 0 01-2.3-1.4 8.7 8.7 0 01-1.6-2c-.2-.3 0-.5.1-.6l.4-.5c.1-.2.2-.3.3-.5s0-.4 0-.5c0-.2-.7-1.7-1-2.3-.2-.6-.5-.5-.7-.5h-.6a1.2 1.2 0 00-.9.4A3.5 3.5 0 004 9.6c0 1.9 1.4 3.7 1.6 4 .2.3 2.8 4.3 6.8 5.7.9.3 1.6.5 2.2.7.9.3 1.7.2 2.4.1.7-.1 2-.8 2.3-1.6.3-.8.3-1.5.2-1.6-.1-.2-.3-.3-.6-.4z"/></svg>
@@ -889,7 +914,7 @@ function personRow(nombre, sub, tel, highlight=false){
     : `<span class="tel-missing">Sin teléfono</span>`;
   const subClass = highlight ? 'person-sub-badge' : 'person-sub';
   return `
-    <div class="person-row">
+    <div class="person-row${retirado ? ' is-retired' : ''}">
       <div class="avatar">${iniciales(nombre)}</div>
       <div class="person-info">
         <div class="person-name">${nombre}</div>
@@ -904,23 +929,34 @@ function renderMiembros(filter=''){
   const f = filter.toLowerCase();
   list.innerHTML = miembros
     .filter(m => m.nombre.toLowerCase().includes(f) || m.estudiante.toLowerCase().includes(f))
-    .map(m => personRow(m.nombre, 'Representa a '+m.estudiante, m.tel))
+    .map(m => {
+      if(m.retirado) return personRow(m.nombre, 'Representó a '+m.estudiante+'<br><span class="tag-estado tag-retirado">Estudiante retirado · '+m.retirado+'</span>', m.tel, false, true);
+      if(m.nuevo) return personRow(m.nombre, 'Representa a '+m.estudiante+'<br><span class="tag-estado tag-nuevo">Nuevo ingreso · '+m.nuevo+'</span>', m.tel);
+      return personRow(m.nombre, 'Representa a '+m.estudiante, m.tel);
+    })
     .join('') || `<div class="empty">Sin resultados para "${filter}".</div>`;
 }
 function renderEstudiantes(filter=''){
   const list = document.getElementById('estudiantes-list');
   const f = filter.toLowerCase();
   list.innerHTML = estudiantesFin
-    .filter(n => n.toLowerCase().includes(f))
-    .map((n, i) => `
-      <div class="person-row">
+    .filter(e => e.n.toLowerCase().includes(f))
+    .map((e, i) => {
+      const tag = e.retirado
+        ? `<div class="person-sub"><span class="tag-estado tag-retirado">Retirado · ${e.retirado}</span></div>`
+        : e.nuevo
+        ? `<div class="person-sub"><span class="tag-estado tag-nuevo">Nuevo ingreso · ${e.nuevo}</span></div>`
+        : '';
+      return `
+      <div class="person-row${e.retirado ? ' is-retired' : ''}">
         <span class="row-index">${i+1}</span>
-        <div class="avatar">${iniciales(n)}</div>
+        <div class="avatar">${iniciales(e.n)}</div>
         <div class="person-info">
-          <div class="person-name">${n}</div>
+          <div class="person-name">${e.n}</div>
+          ${tag}
         </div>
-      </div>
-    `).join('') || `<div class="empty">Sin resultados para "${filter}".</div>`;
+      </div>`;
+    }).join('') || `<div class="empty">Sin resultados para "${filter}".</div>`;
 }
 const rolesDestacados = ["Docente de Nivel Inicial","Contacto institucional","Presidente/a de Nivel Inicial","Secretario/a de Nivel Inicial","Tesorero/a de Nivel Inicial"];
 function renderProfesores(filter=''){
