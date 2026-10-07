@@ -335,10 +335,11 @@
   }
   .modal-header h3{font-size:16px; color:var(--ink);}
   .modal-close{background:none; border:none; font-size:22px; line-height:1; color:var(--muted); cursor:pointer; padding:4px 6px;}
-  .modal-body{padding:14px 18px 20px; overflow-y:auto;}
-  .modal-body{scrollbar-width:thin; scrollbar-color:#B9C4DB transparent;}
-  .modal-body::-webkit-scrollbar{width:8px;}
-  .modal-body::-webkit-scrollbar-thumb{background:#B9C4DB; border-radius:8px;}
+  .modal-body{padding:14px 18px 20px; overflow-y:scroll; height:min(62vh, 440px);}
+  .modal-body{scrollbar-width:auto; scrollbar-color:#8FA3CC #E8EEFB;}
+  .modal-body::-webkit-scrollbar{width:12px;}
+  .modal-body::-webkit-scrollbar-track{background:#E8EEFB;}
+  .modal-body::-webkit-scrollbar-thumb{background:#8FA3CC; border-radius:8px; border:2px solid #E8EEFB;}
   .mes-head{
     position:sticky; top:-14px; z-index:1;
     display:flex; justify-content:space-between; align-items:baseline;
