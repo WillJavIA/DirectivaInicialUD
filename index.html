@@ -186,10 +186,13 @@
     background-size:9px 9px;
     border-radius:var(--radius-card);
     padding:30px 26px;
-    display:flex; flex-wrap:wrap; gap:22px;
+    display:flex; flex-direction:column; gap:30px;
   }
+  .cork-row{display:grid; gap:24px;}
+  .cork-current{grid-template-columns:repeat(3, minmax(0,1fr));}
+  .cork-old{grid-template-columns:repeat(3, minmax(0,230px));}
   .note{
-    width:190px; min-height:150px;
+    min-height:150px;
     padding:16px 14px 14px;
     border-radius:3px;
     box-shadow:2px 5px 10px rgba(0,0,0,.22);
@@ -223,6 +226,19 @@
     transform:none;
   }
   .note.ghost::before{display:none;}
+  .note.note-current{min-height:210px; padding:20px 18px 16px;}
+  .note.note-current h3{font-size:16.5px; margin-bottom:8px;}
+  .note.note-current p{font-size:14px; line-height:1.45;}
+  .note.note-current time{font-size:12px;}
+  @media (max-width:760px){
+    .cork-current{grid-template-columns:1fr;}
+    .note.note-current{min-height:0;}
+    .cork-old{grid-template-columns:repeat(2, minmax(0,1fr));}
+  }
+  @media (max-width:420px){
+    .corkboard{padding:26px 18px;}
+    .cork-old{grid-template-columns:1fr;}
+  }
 
   /* ---------- Calendario ---------- */
   .cal-controls{display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:10px;}
@@ -675,36 +691,41 @@
     <!-- ---- PIZARRA ---- -->
     <section class="view" id="view-pizarra">
       <div class="corkboard">
-        <div class="note n4 note-current">
-          <h3>Aporte fondo de actividades</h3>
-          <p>$60 para el fondo del Nivel Inicial. Se cubre en dos pagos: el primero hasta el 30 Sep 2026, el segundo hasta el 30 Nov 2026.</p>
+        <div class="cork-row cork-current">
+          <div class="note n5 note-current">
+            <h3>Halloween: ¡Rock Your Body UD Fest! <span style="white-space:nowrap">2026-2027</span></h3>
+            <p>Evento nocturno UD, $5 por niño, valores serán descontados de los fondos del curso aportados por ustedes.</p>
+            <p>Incluye manilla de acceso para el niño y 1 representante.</p>
+            <p>Manillas adicionales: $2.50 c/u (se cancelan por separado).</p>
+            <p><strong>Manualidades por estudiante:</strong> plazo 26 Oct (consultas con el Docente de Inglés).</p>
+            <time>28 de octubre · 18:00 a 22:00</time>
+          </div>
+          <div class="note n6 note-current">
+            <h3>Día de Difuntos y Fiestas de Cuenca</h3>
+            <p>Compartir "Colada Morada y Guagua de Pan" para los niños y 2 profesores en el aula.</p>
+            <p>$1.50 por persona.</p>
+            <time>29 de octubre</time>
+          </div>
+          <div class="note n4 note-current">
+            <h3>Aporte fondo de actividades</h3>
+            <p>$60 para el fondo del Nivel Inicial. Se cubre en dos pagos: el primero hasta el 30 Sep 2026, el segundo hasta el 30 Nov 2026.</p>
+          </div>
         </div>
-        <div class="note n5 note-current">
-          <h3>Halloween: ¡Rock Your Body UD Fest! <span style="white-space:nowrap">2026-2027</span></h3>
-          <p>$5 por niño, valores serán descontados de los fondos del curso aportados por ustedes.</p>
-          <p>Incluye manilla de acceso para el niño y 1 representante.</p>
-          <p>Manillas adicionales: $2.50 c/u (se cancelan por separado).</p>
-          <p><strong>Manualidades por estudiante:</strong> plazo 26 Oct (consultas con el Docente de Inglés).</p>
-          <time>28 de octubre · 18:00 a 22:00</time>
+        <div class="cork-row cork-old">
+          <div class="note n3 note-old">
+            <h3>Cumpleaños tutora, profesora Stefy</h3>
+            <p>23 de septiembre. ¡Todos nos alegramos y nos haremos presentes!</p>
+          </div>
+          <div class="note n2 note-old">
+            <h3>Primera Reunión de Presidentes</h3>
+            <p>Conformación del Comité Central · 15 Sep, 08:00 am.</p>
+          </div>
+          <div class="note n1 note-old">
+            <h3>Bienvenida al año escolar</h3>
+            <p>¡Arrancamos el período 2026-2027! Reunión General de Padres de Familia · 08 Sep, 18:00.</p>
+          </div>
         </div>
-        <div class="note n6 note-current">
-          <h3>Día de Difuntos y Fiestas de Cuenca</h3>
-          <p>Compartir "Colada Morada y Guagua de Pan" para los niños y 2 profesores en el aula.</p>
-          <p>$1.50 por persona.</p>
-          <time>29 de octubre</time>
-        </div>
-        <div class="note n3 note-old">
-          <h3>Cumpleaños tutora, profesora Stefy</h3>
-          <p>23 de septiembre. ¡Todos nos alegramos y nos haremos presentes!</p>
-        </div>
-        <div class="note n2 note-old">
-          <h3>Primera Reunión de Presidentes</h3>
-          <p>Conformación del Comité Central · 15 Sep, 08:00 am.</p>
-        </div>
-        <div class="note n1 note-old">
-          <h3>Bienvenida al año escolar</h3>
-          <p>¡Arrancamos el período 2026-2027! Reunión General de Padres de Familia · 08 Sep, 18:00.</p>
-        </div>
+      </div>
       </div>
     </section>
 
